@@ -1,7 +1,6 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
   "main": "truffle-config.js",
   "directories": {
     "test": "test"
@@ -15,5 +14,6 @@
   "type": "commonjs",
   "dependencies": {
     "truffle": "^5.11.5"
-  }
+  },
+  "description": ""
 }
