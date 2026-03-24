@@ -29,11 +29,15 @@ jobs:
           cd frontend
           npm run build
 
-      # INSTALL AWS CLI
+      # INSTALL AWS CLI (FIXED)
       - name: Install AWS CLI
         run: |
-          sudo apt-get update
-          sudo apt-get install -y awscli
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install
+
+      - name: Verify AWS CLI
+        run: aws --version
 
       # DEPLOY TO S3
       - name: Deploy to S3
