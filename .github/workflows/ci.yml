@@ -35,6 +35,17 @@ jobs:
       - name: Verify AWS CLI
         run: aws --version
 
+      # DEPLOY INFRASTRUCTURE (CloudFormation)
+      - name: Deploy CloudFormation Stack
+        run: |
+          aws cloudformation deploy \
+          --template-file infrastructure/template.yaml \
+          --stack-name blockchain-devops-stack \
+          --region ${{ secrets.AWS_REGION }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  
+            
       # DEPLOY TO S3
       - name: Deploy to S3
         run: |
