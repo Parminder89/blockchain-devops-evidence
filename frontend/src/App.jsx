@@ -172,7 +172,8 @@ export default function App() {
 
   return (
     <div style={{ padding: 30 }}>
-      <h1>Chain of Custody (MetaMask + Escrow)</h1>
+      <h1>Chain of Custody</h1>
+      <h6>(MetaMask + Escrow)</h6>
 
       <button onClick={connectWallet}>Connect MetaMask</button>
 
