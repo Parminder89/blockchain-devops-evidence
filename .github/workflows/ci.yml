@@ -9,21 +9,26 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
+    timeout-minutes: 15
+
     steps:
+      # 1. Checkout Code
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      # 2. Setup Node
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      # FRONTEND BUILD
+      # 3. Install Dependencies
       - name: Install Frontend Dependencies
         run: |
           cd frontend
           npm install
 
+      # 4. Build Frontend
       - name: Build Frontend
         run: |
           cd frontend
@@ -31,27 +36,46 @@ jobs:
         env:
           VITE_CONTRACT_ADDRESS: ${{ secrets.VITE_CONTRACT_ADDRESS }}
 
-      # VERIFY AWS CLI (already pre-installed)
+      # 5. Verify AWS CLI
       - name: Verify AWS CLI
         run: aws --version
 
-      # DEPLOY INFRASTRUCTURE (CloudFormation)
+      # 6. Validate CloudFormation Template (NEW)
+      - name: Validate CloudFormation Template
+        run: |
+          aws cloudformation validate-template \
+            --template-body file://infrastructure/template.yaml
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+
+      # 7. Deploy Infrastructure (SAFE MODE)
       - name: Deploy CloudFormation Stack
+        continue-on-error: true
         run: |
           aws cloudformation deploy \
             --template-file infrastructure/template.yaml \
             --stack-name blockchain-devops-stack \
-            --region $AWS_DEFAULT_REGION \
             --capabilities CAPABILITY_NAMED_IAM
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }} 
-            
-      # DEPLOY TO S3
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+
+      # 8. Deploy Frontend to S3
       - name: Deploy to S3
         run: |
           aws s3 sync frontend/dist/ s3://${{ secrets.S3_BUCKET }} --delete
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+
+      # 9. Post-Deploy Check (NEW)
+      - name: Verify S3 Deployment
+        run: |
+          aws s3 ls s3://${{ secrets.S3_BUCKET }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

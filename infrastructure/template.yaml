@@ -1,13 +1,19 @@
-AWSTemplateFormatVersion: '2010-09-09'
-Description: S3 Static Website for Blockchain App
-
 Resources:
   WebsiteBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub "blockchain-devops-frontend-${AWS::AccountId}-${AWS::Region}"
+      BucketName: blockchain-devops-frontend
       WebsiteConfiguration:
         IndexDocument: index.html
+
+  PublicAccessBlock:
+    Type: AWS::S3::BucketPublicAccessBlock
+    Properties:
+      Bucket: !Ref WebsiteBucket
+      BlockPublicAcls: false
+      BlockPublicPolicy: false
+      IgnorePublicAcls: false
+      RestrictPublicBuckets: false
 
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -18,4 +24,4 @@ Resources:
           - Effect: Allow
             Principal: "*"
             Action: "s3:GetObject"
-            Resource: !Sub "arn:aws:s3:::${WebsiteBucket}/*"
+            Resource: !Sub "${WebsiteBucket.Arn}/*"
