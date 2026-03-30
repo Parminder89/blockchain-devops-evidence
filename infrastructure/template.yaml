@@ -18,4 +18,4 @@ Resources:
           - Effect: Allow
             Principal: "*"
             Action: "s3:GetObject"
-            Resource: !Sub "${WebsiteBucket}/*"
+            Resource: !Sub "arn:aws:s3:::${WebsiteBucket}/*"
