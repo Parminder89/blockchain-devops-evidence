@@ -6,20 +6,12 @@ Resources:
       WebsiteConfiguration:
         IndexDocument: index.html
 
-  PublicAccessBlock:
-    Type: AWS::S3::BucketPublicAccessBlock
-    Properties:
-      Bucket: !Ref WebsiteBucket
-      BlockPublicAcls: false
-      BlockPublicPolicy: false
-      IgnorePublicAcls: false
-      RestrictPublicBuckets: false
-
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
       Bucket: !Ref WebsiteBucket
       PolicyDocument:
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal: "*"
