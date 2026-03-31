@@ -1,19 +1,10 @@
-Resources:
-  WebsiteBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: blockchain-devops-frontend
-      WebsiteConfiguration:
-        IndexDocument: index.html
+AWSTemplateFormatVersion: '2010-09-09'
 
-  BucketPolicy:
-    Type: AWS::S3::BucketPolicy
+Description: Blockchain DevOps Infrastructure
+
+Resources:
+  LogsGroup:
+    Type: AWS::Logs::LogGroup
     Properties:
-      Bucket: !Ref WebsiteBucket
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal: "*"
-            Action: "s3:GetObject"
-            Resource: !Sub "${WebsiteBucket.Arn}/*"
+      LogGroupName: blockchain-devops-log-group
+      RetentionInDays: 7
